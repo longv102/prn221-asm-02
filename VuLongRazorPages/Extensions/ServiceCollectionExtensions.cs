@@ -1,8 +1,9 @@
-﻿using DAL.Database;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Contracts;
-using VuLongRazorPages.Middlewares;
+using Repositories.Databases;
+using Services;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Extensions
 {
@@ -12,23 +13,32 @@ namespace VuLongRazorPages.Extensions
         {
             services.AddRazorPages();
 
-            // Register database provider
-            services.AddDbContext<FunewsManagementDbContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")
-                    ?? throw new InvalidOperationException("Connection string is not valid!"));
-            });
-
-            // Register middelware for handling errors and exceptions
-            services.AddTransient<GlobalExceptionHandlingMiddleware>();
-
-            // Register repositories
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<ISystemAccountRepository, SystemAccountRepository>();
-            services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
-
             // Register AutoMapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // Register database context
+            services.AddDbContext<FunewsManagementDbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Invalid connection string!"));
+            });
+
+            // Register services
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+
+            // Register repositories
+            services.AddScoped<ISystemAccountRepository, SystemAccountRepository>();
+            services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            // Configure session service
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             return services;
         }

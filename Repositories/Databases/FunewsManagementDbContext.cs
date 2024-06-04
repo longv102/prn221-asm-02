@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using DAL;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace DAL.Database;
+namespace Repositories.Databases;
 
 public partial class FunewsManagementDbContext : DbContext
 {
@@ -31,11 +28,12 @@ public partial class FunewsManagementDbContext : DbContext
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true, true)
             .Build();
-
-        return configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+        
+        return configuration.GetConnectionString("Default") ?? string.Empty;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(GetConnectionString());
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer(GetConnectionString());
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

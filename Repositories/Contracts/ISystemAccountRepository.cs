@@ -1,6 +1,9 @@
-﻿namespace Repositories.Contracts
+﻿using BO.Dtos;
+
+namespace Repositories.Contracts
 {
-    public class ISystemAccountRepository
+    public interface ISystemAccountRepository
     {
+        Task<SystemAccount> Authenticate(AuthRequest request);
     }
 }
