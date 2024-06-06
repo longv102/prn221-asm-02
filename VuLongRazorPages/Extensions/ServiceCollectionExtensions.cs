@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Contracts;
 using Repositories.Databases;
@@ -12,6 +13,14 @@ namespace VuLongRazorPages.Extensions
         public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddRazorPages();
+            // Using session
+            services.AddHttpContextAccessor();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+            {
+                options.LoginPath = "/Auth/Signin";
+            });
 
             // Register AutoMapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

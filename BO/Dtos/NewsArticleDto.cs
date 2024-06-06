@@ -18,7 +18,7 @@
 
         public short? CreatedById { get; set; }
 
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
 

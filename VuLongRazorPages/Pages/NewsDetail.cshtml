@@ -1,0 +1,42 @@
+﻿@page 
+@model VuLongRazorPages.Pages.NewsDetailModel
+@{
+    ViewData["Title"] = "News Detail";
+}
+
+<style>
+    .content-text{
+        padding: 15px;
+        font-size: 1.1em;
+        line-height: 1.6;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">@Model.News.NewsTitle</h2>
+            <p class="card-text content-text">@Model.News.NewsContent</p>
+
+            <div class="mt-3">
+                <p><strong>Created Date:</strong> @Model.News.CreatedDate?.ToString("MMMM dd, yyyy")</p>
+                <p><strong>Category:</strong> @Model.News.CategoryName</p>
+                <p><strong>Author:</strong> @Model.News.CreatedBy</p>
+            </div>
+
+            <div class="mt-3">
+                <h5>Tags:</h5>
+                <ul class="list-inline">
+                    @foreach (var tag in Model.News.TagNames)
+                    {
+                        <li class="list-inline-item">
+                            <span class="badge bg-primary">@tag</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

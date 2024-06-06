@@ -8,7 +8,7 @@
 
         public string? AccountEmail { get; set; }
 
-        public int? AccountRole { get; set; }
+        public int AccountRole { get; set; }
 
         public string? AccountPassword { get; set; } = "1234";
     }

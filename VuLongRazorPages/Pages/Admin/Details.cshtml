@@ -1,0 +1,37 @@
+﻿@page
+@model VuLongRazorPages.Pages.Admin.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>System Account</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Account Name
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SystemAccount.AccountName)
+        </dd>
+        <dt class="col-sm-2">
+            Account Email
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SystemAccount.AccountEmail)
+        </dd>
+        <dt class="col-sm-2">
+            Account Role
+        </dt>
+        <dd class="col-sm-10">
+            @Model.GetRoleName(Model.SystemAccount.AccountRole)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.SystemAccount.AccountId">Edit</a> |
+    <a asp-page="./AdminRedirect">Back to List</a>
+</div>

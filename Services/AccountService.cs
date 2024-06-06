@@ -16,7 +16,7 @@ namespace Services
             _mapper = mapper;
         }
 
-        public async Task<SystemAccountDto> Authenticate(AuthRequest request)
+        public async Task<SystemAccountDto?> Authenticate(AuthRequest request)
         {
             try
             {
@@ -28,6 +28,20 @@ namespace Services
             {
                 throw;
             }
+        }
+
+        public async Task<SystemAccountDto> GetAccount(short accountId)
+        {
+            var account = await _systemAccountRepository.GetAccount(accountId);
+            var mappedAccount = _mapper.Map<SystemAccountDto>(account);
+            return mappedAccount;
+        }
+
+        public async Task<IEnumerable<SystemAccountDto>> GetAccounts()
+        {
+            var accounts = await _systemAccountRepository.GetAccounts();
+            var response = _mapper.Map<IEnumerable<SystemAccountDto>>(accounts);
+            return response;
         }
     }
 }

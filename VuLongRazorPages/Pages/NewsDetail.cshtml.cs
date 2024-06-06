@@ -5,20 +5,20 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages
 {
-    public class IndexModel : PageModel
+    public class NewsDetailModel : PageModel
     {
         private readonly INewsService _newsService;
 
-        public IndexModel(INewsService newsService)
+        public NewsDetailModel(INewsService newsService)
         {
             _newsService = newsService;
         }
 
-        public IEnumerable<NewsArticleDto> News { get; set; } = null!;
-        
-        public async Task<ActionResult> OnGetAsync()
+        public NewsArticleDto News { get; private set; } = null!;
+
+        public async Task<ActionResult> OnGetAsync(string id)
         {
-            News = await _newsService.GetNews();
+            News = await _newsService.GetNewsById(id);
             return Page();
         }
     }

@@ -4,7 +4,24 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    @{
+        if (Model.News.Any())
+        {
+            @foreach (var news in Model.News)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">@news.NewsTitle</h5>
+                        <p class="card-text">@news.NewsContent?.Substring(0, 100)...</p>
+                        <a asp-page="/NewsDetail" asp-route-id="@news.NewsArticleId" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No news article available!</p>
+        }
+    }
 </div>

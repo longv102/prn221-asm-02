@@ -36,7 +36,7 @@ namespace VuLongRazorPages.Pages.Auth
             if (adminEmail == AuthRequest.Email && adminPassword == AuthRequest.Password)
             {
                 HttpContext.Session.SetString("AdminEmail", AuthRequest.Email);
-                HttpContext.Session.SetString("AdminRole", adminRole);
+                HttpContext.Session.SetString("Role", adminRole);
                 // Redirects to admin page
                 return RedirectToPage("/Admin/AdminRedirect");
             }
@@ -49,7 +49,7 @@ namespace VuLongRazorPages.Pages.Auth
                 {
                     HttpContext.Session.SetString("StaffEmail", account.AccountEmail);
                     HttpContext.Session.SetString("StaffName", account.AccountName);
-                    HttpContext.Session.SetString("StaffRole", "Staff");
+                    HttpContext.Session.SetString("Role", "Staff");
                     // Redirects to staff page
                     return RedirectToPage("/Staff/StaffRedirect");
                 }
