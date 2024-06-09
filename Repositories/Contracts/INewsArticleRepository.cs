@@ -5,5 +5,7 @@
         Task<IEnumerable<NewsArticle>> GetNews();
 
         Task<NewsArticle?> GetNewsById(string newsId);
+
+        IQueryable<NewsArticle> GetNewsQueryable();
     }
 }

@@ -45,5 +45,22 @@ namespace Repositories
                 throw;
             }
         }
+
+        public IQueryable<NewsArticle> GetNewsQueryable()
+        {
+            try
+            {
+                var news = _dbContext.NewsArticles.Include(x => x.CreatedBy)
+                    .Include(x => x.Tags)
+                    .Include(x => x.Category)
+                    .Where(x => x.NewsStatus == true)
+                    .AsQueryable();
+                return news;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

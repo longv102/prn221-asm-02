@@ -1,16 +1,15 @@
 ﻿using BO.Dtos;
-using BO.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
-namespace VuLongRazorPages.Pages.Admin
+namespace VuLongRazorPages.Pages.Staff
 {
-    public class EditModel : PageModel
+    public class StaffProfileModel : PageModel
     {
         private readonly IAccountService _accountService;
 
-        public EditModel(IAccountService accountService)
+        public StaffProfileModel(IAccountService accountService)
         {
             _accountService = accountService;
         }
@@ -18,38 +17,35 @@ namespace VuLongRazorPages.Pages.Admin
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(short? id)
+        public async Task<IActionResult> OnGetAsync(string email)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var account = await _accountService.GetAccount((short)id);
-            if (account == null)
+            var account = await _accountService.GetAccount(email);
+            if (account is null)
             {
                 return NotFound();
             }
             SystemAccount = account;
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+
             var result = await _accountService.UpdateAccount(SystemAccount);
             switch (result)
             {
-                case AccountOperationResult.Success:
-                    return RedirectToPage("./AdminRedirect");
-                case AccountOperationResult.EmptyAccount:
-                    ModelState.AddModelError(string.Empty, "Error! Account is null.");
+                case BO.Enums.AccountOperationResult.Success:
+                    return RedirectToPage("../StaffRedirect");
+                case BO.Enums.AccountOperationResult.EmptyAccount:
+                    ModelState.AddModelError(string.Empty, "Error operation!");
                     break;
             }
             return Page();
+
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using BO.Dtos;
-using Repositories;
+using BO.Enums;
 
 namespace Services.Interfaces
 {
@@ -10,5 +10,13 @@ namespace Services.Interfaces
         Task<IEnumerable<SystemAccountDto>> GetAccounts();
 
         Task<SystemAccountDto> GetAccount(short accountId);
+
+        Task<SystemAccountDto> GetAccount(string email);
+
+        Task<AccountOperationResult> CreateAccount(SystemAccountDto request);
+
+        Task<AccountOperationResult> UpdateAccount(SystemAccountDto request);
+
+        Task<AccountOperationResult> DeleteAccount(short accountId);
     }
 }

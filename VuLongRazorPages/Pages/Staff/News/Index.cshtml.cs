@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
-using Repositories.Databases;
 
-namespace VuLongRazorPages.Pages.Accounts
+namespace VuLongRazorPages.Pages.Staff.News
 {
     public class IndexModel : PageModel
     {
@@ -19,11 +13,13 @@ namespace VuLongRazorPages.Pages.Accounts
             _context = context;
         }
 
-        public IList<SystemAccount> SystemAccount { get;set; } = default!;
+        public IList<NewsArticle> NewsArticle { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            SystemAccount = await _context.SystemAccounts.ToListAsync();
+            NewsArticle = await _context.NewsArticles
+                .Include(n => n.Category)
+                .Include(n => n.CreatedBy).ToListAsync();
         }
     }
 }

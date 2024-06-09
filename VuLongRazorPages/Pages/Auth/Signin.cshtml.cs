@@ -19,11 +19,7 @@ namespace VuLongRazorPages.Pages.Auth
             _accountService = accountService;
             _configuration = configuration;
         }
-
-        public void OnGet()
-        {
-        }
-
+        
         public async Task<ActionResult> OnPostAsync()
         {
             // Read the FU News admin credentials stored in appsettings.json
@@ -52,7 +48,9 @@ namespace VuLongRazorPages.Pages.Auth
                     HttpContext.Session.SetString("Role", "Staff");
                     // Redirects to staff page
                     return RedirectToPage("/Staff/StaffRedirect");
-                }
+                } 
+                else if (account.AccountRole == AccountRole.LecturerRole)
+                    ModelState.AddModelError(string.Empty, "This role is not supported yet!");
 
             }
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");

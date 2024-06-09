@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
     public class DeleteModel : PageModel
     {
-        private readonly FunewsManagementDbContext _context;
+        private readonly IAccountService _accountService;
 
-        public DeleteModel(FunewsManagementDbContext context)
+        public DeleteModel(IAccountService accountService)
         {
-            _context = context;
+            _accountService = accountService;
         }
 
         [BindProperty]
-        public SystemAccount SystemAccount { get; set; } = default!;
+        public SystemAccountDto SystemAccount { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
@@ -29,15 +24,15 @@ namespace VuLongRazorPages.Pages.Admin
                 return NotFound();
             }
 
-            var systemaccount = await _context.SystemAccounts.FirstOrDefaultAsync(m => m.AccountId == id);
+            var account = await _accountService.GetAccount((short)id);
 
-            if (systemaccount == null)
+            if (account == null)
             {
                 return NotFound();
             }
             else
             {
-                SystemAccount = systemaccount;
+                SystemAccount = account;
             }
             return Page();
         }
@@ -49,15 +44,26 @@ namespace VuLongRazorPages.Pages.Admin
                 return NotFound();
             }
 
-            var systemaccount = await _context.SystemAccounts.FindAsync(id);
-            if (systemaccount != null)
+            var result = await _accountService.DeleteAccount((short)id);
+            switch (result)
             {
-                SystemAccount = systemaccount;
-                _context.SystemAccounts.Remove(SystemAccount);
-                await _context.SaveChangesAsync();
+                case BO.Enums.AccountOperationResult.Success:
+                    return RedirectToPage("./AdminRedirect");
+                case BO.Enums.AccountOperationResult.EmptyAccount:
+                    ModelState.AddModelError(string.Empty, "Error! Account is null.");
+                    break;
             }
+            return Page();
+        }
 
-            return RedirectToPage("./Index");
+        public string GetRoleName(int accountRole)
+        {
+            return accountRole switch
+            {
+                1 => "Staff",
+                2 => "Lecturer",
+                _ => "Unknown"
+            };
         }
     }
 }
