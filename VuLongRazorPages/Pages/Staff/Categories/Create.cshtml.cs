@@ -1,33 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Repositories;
-using Repositories.Databases;
+using Repositories.Contracts;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
     public class CreateModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly ICategoryService _categoryService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(Repositories.Databases.FunewsManagementDbContext context)
+        public CreateModel(ICategoryService categoryService , IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _categoryService = categoryService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult OnGet()
         {
+            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+                return RedirectToPage("../StaffRedirect");
+
             return Page();
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public CategoryDto Category { get; set; } = default!;
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,10 +36,16 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return Page();
             }
 
-            _context.Categories.Add(Category);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            var result = await _categoryService.CreateCategory(Category);
+            switch (result)
+            {
+                case BO.Enums.CategoryOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case BO.Enums.CategoryOperationResult.Empty:
+                    ModelState.AddModelError(string.Empty, "Category is empty!");
+                    break;
+            }
+            return Page();
         }
     }
 }

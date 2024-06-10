@@ -5,68 +5,104 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>News</h1>
 
 <p>
     <a asp-page="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
+
+@* Custom CSS *@
+<style>
+    .table thead th {
+        text-align: center;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .search-button {
+        margin-left: 10px;
+    }
+</style>
+
+<table class="table table-striped table-hover table-bordered">
+    <thead class="thead-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsContent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].ModifiedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsArticle[0].CreatedBy)
-            </th>
-            <th></th>
+            <th>Title</th>
+            <th>Created Date</th>
+            <th>Content</th>
+            <th>Status</th>
+            <th>Modified Date</th>
+            <th>Category</th>
+            <th>Created By</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.NewsArticle) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsContent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryDesciption)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.AccountId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.NewsArticleId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.NewsArticleId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.NewsArticleId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.NewsArticle)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.NewsTitle)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.NewsContent)</td>
+                <td>@Html.DisplayFor(modelItem => item.NewsStatus)</td>
+                <td>@Html.DisplayFor(modelItem => item.ModifiedDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.CategoryName)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedBy)</td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="Actions">
+                        <a class="btn btn-sm btn-primary" asp-page="./Edit" asp-route-id="@item.NewsArticleId">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a class="btn btn-sm btn-info" asp-page="./Details" asp-route-id="@item.NewsArticleId">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a>
+                        <a class="btn btn-sm btn-danger" asp-page="./Delete" asp-route-id="@item.NewsArticleId">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="?currentPage=@(Model.CurrentPage - 1)">Previous</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="?currentPage=@i">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="?currentPage=@(Model.CurrentPage + 1)">Next</a>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    $(document).ready(function () {
+        $('.page-link').on('click', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $('html, body').animate({ scrollTop: 0 }, 'slow', function () {
+                window.location.href = url;
+            });
+        });
+    });
+</script>

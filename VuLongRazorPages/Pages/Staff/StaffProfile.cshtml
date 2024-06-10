@@ -25,7 +25,8 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="SystemAccount.AccountRole" class="control-label">Account Role</label>
-                <input asp-for="SystemAccount.AccountRole" class="form-control" readonly/>
+                <input asp-for="SystemAccount.AccountRole" class="form-control" readonly hidden />
+                <input class="form-control" readonly value="@Model.GetRoleName(Model.SystemAccount.AccountRole)" />
                 <span asp-validation-for="SystemAccount.AccountRole" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -41,7 +42,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./StaffRedirect">Back to List</a>
 </div>
 
 @section Scripts {

@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
+using BO.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
     public class EditModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public EditModel(Repositories.Databases.FunewsManagementDbContext context)
+        public EditModel(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public CategoryDto Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
@@ -30,7 +25,7 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return NotFound();
             }
 
-            var category =  await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _categoryService.GetCategory((short)id);
             if (category == null)
             {
                 return NotFound();
@@ -39,8 +34,6 @@ namespace VuLongRazorPages.Pages.Staff.Categories
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -48,30 +41,16 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return Page();
             }
 
-            _context.Attach(Category).State = EntityState.Modified;
-
-            try
+            var result = await _categoryService.UpdateCategory(Category);
+            switch (result)
             {
-                await _context.SaveChangesAsync();
+                case CategoryOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case CategoryOperationResult.Empty:
+                    ModelState.AddModelError(string.Empty, "Category is empty!");
+                    break;
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(Category.CategoryId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool CategoryExists(short id)
-        {
-            return _context.Categories.Any(e => e.CategoryId == id);
+            return Page();
         }
     }
 }

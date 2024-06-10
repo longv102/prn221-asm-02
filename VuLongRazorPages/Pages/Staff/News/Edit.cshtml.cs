@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
     public class EditModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly INewsService _newsService;
+        private readonly ICategoryService _categoryService;
+        private readonly IAccountService _accountService;
 
-        public EditModel(Repositories.Databases.FunewsManagementDbContext context)
+        public EditModel(INewsService newsService, ICategoryService categoryService, IAccountService accountService)
         {
-            _context = context;
+            _newsService = newsService;
+            _categoryService = categoryService;
+            _accountService = accountService;
         }
 
         [BindProperty]
-        public NewsArticle NewsArticle { get; set; } = default!;
+        public NewsArticleDto NewsArticle { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -30,19 +31,18 @@ namespace VuLongRazorPages.Pages.Staff.News
                 return NotFound();
             }
 
-            var newsarticle =  await _context.NewsArticles.FirstOrDefaultAsync(m => m.NewsArticleId == id);
-            if (newsarticle == null)
+            var newsArticle = await _newsService.GetNewsById(id);
+            if (newsArticle == null)
             {
                 return NotFound();
             }
-            NewsArticle = newsarticle;
-           ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryDesciption");
-           ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId");
+
+            NewsArticle = newsArticle;
+            ViewData["CategoryId"] = new SelectList(await _categoryService.GetCategories(), "CategoryId", "CategoryName");
+            ViewData["CreatedById"] = new SelectList(await _accountService.GetAccounts(), "AccountId", "AccountName");
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -50,30 +50,16 @@ namespace VuLongRazorPages.Pages.Staff.News
                 return Page();
             }
 
-            _context.Attach(NewsArticle).State = EntityState.Modified;
-
-            try
+            var result = await _newsService.UpdateNews(NewsArticle);
+            switch (result)
             {
-                await _context.SaveChangesAsync();
+                case BO.Enums.NewsOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case BO.Enums.NewsOperationResult.Empty:
+                    ModelState.AddModelError(string.Empty, "News is empty!");
+                    break;
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NewsArticleExists(NewsArticle.NewsArticleId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool NewsArticleExists(string id)
-        {
-            return _context.NewsArticles.Any(e => e.NewsArticleId == id);
+            return Page();
         }
     }
 }

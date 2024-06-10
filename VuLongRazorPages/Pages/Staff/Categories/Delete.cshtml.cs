@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
     public class DeleteModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public DeleteModel(Repositories.Databases.FunewsManagementDbContext context)
+        public DeleteModel(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public CategoryDto Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
@@ -29,7 +24,7 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _categoryService.GetCategory((short)id);
 
             if (category == null)
             {
@@ -49,15 +44,17 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var result = await _categoryService.DeleteCategory((short)id);
+            switch (result)
             {
-                Category = category;
-                _context.Categories.Remove(Category);
-                await _context.SaveChangesAsync();
+                case BO.Enums.CategoryOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case BO.Enums.CategoryOperationResult.Used:
+                    ModelState.AddModelError(string.Empty, "Cannot delete this category because it is used in news!");
+                    Category = await _categoryService.GetCategory((short)id);
+                    break;
             }
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

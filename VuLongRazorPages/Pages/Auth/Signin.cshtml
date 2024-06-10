@@ -1,4 +1,5 @@
-﻿@page
+﻿@* configure default startup page *@
+@page "/" 
 @model VuLongRazorPages.Pages.Auth.SigninModel
 @{
     ViewData["Title"] = "Sign in";
@@ -14,13 +15,11 @@
                         <div class="form-group mb-3">
                             <label asp-for="AuthRequest.Email" class="form-label"></label>
                             <input asp-for="AuthRequest.Email" class="form-control" placeholder="Enter your email" />
-                            @* <span asp-validation-for="AuthRequest.Email" class="text-danger"></span> *@
                         </div>
 
                         <div class="form-group mb-3">
                             <label asp-for="AuthRequest.Password" class="form-label"></label>
                             <input asp-for="AuthRequest.Password" class="form-control" type="password" placeholder="Enter your password" />
-                            @* <span asp-validation-for="AuthRequest.Password" class="text-danger"></span> *@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Sign in</button>
 

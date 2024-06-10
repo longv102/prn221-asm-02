@@ -13,6 +13,7 @@ namespace VuLongRazorPages.Extensions
         public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddRazorPages();
+
             // Using session
             services.AddHttpContextAccessor();
 

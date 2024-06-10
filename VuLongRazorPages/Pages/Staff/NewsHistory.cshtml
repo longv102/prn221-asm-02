@@ -1,0 +1,51 @@
+﻿@page
+@model VuLongRazorPages.Pages.Staff.NewsHistoryModel
+@{
+    ViewData["Title"] = "News History";
+}
+
+<div class="container mt-5">
+    @{
+        if (Model.NewsArticles.Any())
+        {
+            @foreach (var news in Model.NewsArticles)
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">@news.NewsTitle</h2>
+                                <p class="card-text content-text">@news.NewsContent</p>
+
+                                <div class="mt-3">
+                                    <p><strong>Created Date:</strong> @news.CreatedDate?.ToString("MMMM dd, yyyy")</p>
+                                    <p><strong>Category:</strong> @news.CategoryName</p>
+                                    <p><strong>Author:</strong> @news.CreatedBy</p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <h5>Tags:</h5>
+                                    <ul class="list-inline">
+                                        @foreach (var tag in news.TagNames)
+                                        {
+                                            <li class="list-inline-item">
+                                                <span class="badge bg-primary">@tag</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No news articles available!</p>
+        }
+        <a asp-page="./StaffRedirect" class="btn btn-primary mt-4">Back to screen</a>
+    }
+</div>
+
+

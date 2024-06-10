@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/Index"
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -35,7 +35,13 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">@news.NewsTitle</h5>
-                        <p class="card-text">@news.NewsContent?.Substring(0, 100)...</p>
+                        <p class="card-text">
+                            @{
+                                var content = news.NewsContent ?? string.Empty;
+                                var preview = content.Length > 100 ? content.Substring(0, 100) + "..." : content;
+                            }
+                            @preview
+                        </p>
                         <a asp-page="/NewsDetail" asp-route-id="@news.NewsArticleId" class="btn btn-primary">Read More</a>
                     </div>
                 </div>

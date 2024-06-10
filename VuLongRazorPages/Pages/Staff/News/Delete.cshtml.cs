@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
     public class DeleteModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly INewsService _newsService;
 
-        public DeleteModel(Repositories.Databases.FunewsManagementDbContext context)
+        public DeleteModel(INewsService newsService)
         {
-            _context = context;
+            _newsService = newsService;
         }
 
         [BindProperty]
-        public NewsArticle NewsArticle { get; set; } = default!;
+        public NewsArticleDto NewsArticle { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -29,15 +26,15 @@ namespace VuLongRazorPages.Pages.Staff.News
                 return NotFound();
             }
 
-            var newsarticle = await _context.NewsArticles.FirstOrDefaultAsync(m => m.NewsArticleId == id);
+            var newsArticle = await _newsService.GetNewsById(id);
 
-            if (newsarticle == null)
+            if (newsArticle == null)
             {
                 return NotFound();
             }
             else
             {
-                NewsArticle = newsarticle;
+                NewsArticle = newsArticle;
             }
             return Page();
         }
@@ -49,15 +46,16 @@ namespace VuLongRazorPages.Pages.Staff.News
                 return NotFound();
             }
 
-            var newsarticle = await _context.NewsArticles.FindAsync(id);
-            if (newsarticle != null)
+            var result = await _newsService.DeleteNews(id);
+            switch (result)
             {
-                NewsArticle = newsarticle;
-                _context.NewsArticles.Remove(NewsArticle);
-                await _context.SaveChangesAsync();
+                case BO.Enums.NewsOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case BO.Enums.NewsOperationResult.Empty:
+                    ModelState.AddModelError(string.Empty, "News is empty!");
+                    break;
             }
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

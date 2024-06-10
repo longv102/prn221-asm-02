@@ -1,25 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
+﻿using BO.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
     public class IndexModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly INewsService _newsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _pageSize = 5;
 
-        public IndexModel(Repositories.Databases.FunewsManagementDbContext context)
+        public IndexModel(INewsService newsService, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _newsService = newsService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IList<NewsArticle> NewsArticle { get;set; } = default!;
+        public int CurrentPage { get; set; }
 
-        public async Task OnGetAsync()
+        public int TotalPages { get; set; }
+
+        public IList<NewsArticleDto> NewsArticle { get;set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(int currentPage = 1)
         {
-            NewsArticle = await _context.NewsArticles
-                .Include(n => n.Category)
-                .Include(n => n.CreatedBy).ToListAsync();
+            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+                return RedirectToPage("../StaffRedirect");
+
+            NewsArticle = (IList<NewsArticleDto>)await _newsService.GetNewsV2();
+            TotalPages = (int)Math.Ceiling(NewsArticle.Count() / (double)_pageSize);
+
+            CurrentPage = currentPage;
+            NewsArticle = NewsArticle.Skip((CurrentPage - 1) * _pageSize).Take(_pageSize).ToList();
+            return Page();  
         }
     }
 }

@@ -1,35 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
     public class CreateModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly INewsService _newsService;
+        private readonly IAccountService _accountService;
+        private readonly ICategoryService _categoryService;
 
-        public CreateModel(Repositories.Databases.FunewsManagementDbContext context)
+        public CreateModel(INewsService newsService, IAccountService accountService, ICategoryService categoryService)
         {
-            _context = context;
+            _newsService = newsService;
+            _accountService = accountService;
+            _categoryService = categoryService;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryDesciption");
-        ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId");
+            ViewData["CategoryId"] = new SelectList(await _categoryService.GetCategories(), "CategoryId", "CategoryName");
+            ViewData["CreatedById"] = new SelectList(await _accountService.GetAccounts(), "AccountId", "AccountName");
             return Page();
         }
 
         [BindProperty]
-        public NewsArticle NewsArticle { get; set; } = default!;
+        public NewsArticleDto NewsArticle { get; set; } = default!;
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -37,10 +36,25 @@ namespace VuLongRazorPages.Pages.Staff.News
                 return Page();
             }
 
-            _context.NewsArticles.Add(NewsArticle);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            var result = await _newsService.CreateNews(NewsArticle);
+            switch (result)
+            {
+                case BO.Enums.NewsOperationResult.Success:
+                    return RedirectToPage("./Index");
+                case BO.Enums.NewsOperationResult.Duplicate:
+                    ModelState.AddModelError(string.Empty, "News id is already existed!");
+                    // Reload the data of category and account
+                    ViewData["CategoryId"] = new SelectList(await _categoryService.GetCategories(), "CategoryId", "CategoryName");
+                    ViewData["CreatedById"] = new SelectList(await _accountService.GetAccounts(), "AccountId", "AccountName");
+                    break;
+                case BO.Enums.NewsOperationResult.Empty:
+                    ModelState.AddModelError(string.Empty, "News id is empty!");
+                    // Reload the data of category and account
+                    ViewData["CategoryId"] = new SelectList(await _categoryService.GetCategories(), "CategoryId", "CategoryName");
+                    ViewData["CreatedById"] = new SelectList(await _accountService.GetAccounts(), "AccountId", "AccountName");
+                    break;
+            }
+            return Page();
         }
     }
 }

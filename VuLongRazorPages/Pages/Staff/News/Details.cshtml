@@ -8,50 +8,50 @@
 <h1>Details</h1>
 
 <div>
-    <h4>NewsArticle</h4>
+    <h4>News Article</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.NewsTitle)
+            News Title
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NewsArticle.NewsTitle)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.CreatedDate)
+            Created Date
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NewsArticle.CreatedDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.NewsContent)
+            News Content
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NewsArticle.NewsContent)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.NewsStatus)
+            Status
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NewsArticle.NewsStatus)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.ModifiedDate)
+            Modified Date
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NewsArticle.ModifiedDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.Category)
+            Category
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.Category.CategoryDesciption)
+            @Html.DisplayFor(model => model.NewsArticle.CategoryName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.CreatedBy)
+            Created By
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.CreatedBy.AccountId)
+            @Html.DisplayFor(model => model.NewsArticle.CreatedBy)
         </dd>
     </dl>
 </div>

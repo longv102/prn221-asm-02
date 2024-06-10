@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
-using Repositories.Databases;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
     public class DetailsModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public DetailsModel(Repositories.Databases.FunewsManagementDbContext context)
+        public DetailsModel(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
-        public Category Category { get; set; } = default!;
+        public CategoryDto Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
@@ -28,7 +23,7 @@ namespace VuLongRazorPages.Pages.Staff.Categories
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _categoryService.GetCategory((short)id);
             if (category == null)
             {
                 return NotFound();

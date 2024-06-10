@@ -8,14 +8,18 @@ namespace VuLongRazorPages.Pages.Staff
     public class StaffProfileModel : PageModel
     {
         private readonly IAccountService _accountService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public StaffProfileModel(IAccountService accountService)
+        public StaffProfileModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
+
+        public string? Role { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string email)
         {
@@ -28,8 +32,22 @@ namespace VuLongRazorPages.Pages.Staff
             return Page();
         }
 
+        public string GetRoleName(int accountRole)
+        {
+            return accountRole switch
+            {
+                1 => "Staff",
+                2 => "Lecturer",
+                _ => "Unknown"
+            };
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
+            // mapping role
+            //var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role") ?? string.Empty;
+            //Role = role;
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -39,7 +57,7 @@ namespace VuLongRazorPages.Pages.Staff
             switch (result)
             {
                 case BO.Enums.AccountOperationResult.Success:
-                    return RedirectToPage("../StaffRedirect");
+                    return RedirectToPage("./StaffRedirect");
                 case BO.Enums.AccountOperationResult.EmptyAccount:
                     ModelState.AddModelError(string.Empty, "Error operation!");
                     break;

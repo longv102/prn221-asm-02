@@ -1,23 +1,51 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repositories;
+﻿using BO.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
     public class IndexModel : PageModel
     {
-        private readonly Repositories.Databases.FunewsManagementDbContext _context;
+        private readonly ICategoryService _categoryService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndexModel(Repositories.Databases.FunewsManagementDbContext context)
+        public IndexModel(ICategoryService categoryService, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _categoryService = categoryService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IList<Category> Category { get;set; } = default!;
+        [BindProperty(SupportsGet = true)]
+        public string? SearchOption { get; set; }
 
-        public async Task OnGetAsync()
+        [BindProperty(SupportsGet = true)]
+        public string? SearchQuery { get; set; }
+
+        public IList<CategoryDto> Category { get;set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            Category = await _context.Categories.ToListAsync();
+            // Authorization for staff role
+            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+                return RedirectToPage("../StaffRedirect");
+            
+            Category = (IList<CategoryDto>)await _categoryService.GetCategories();
+            if (!string.IsNullOrEmpty(SearchQuery))
+            {
+                if ("Name" == SearchOption)
+                {
+                    Category = Category.Where(x => x.CategoryName.Contains(SearchQuery.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+                    return Page();
+                }
+                else if ("Description" == SearchOption)
+                {
+                    Category = Category.Where(x => x.CategoryDesciption.Contains(SearchQuery.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+                    return Page();
+                }
+            }
+            return Page();
         }
     }
 }
