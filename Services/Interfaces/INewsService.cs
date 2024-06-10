@@ -18,5 +18,13 @@ namespace Services.Interfaces
         Task<NewsOperationResult> DeleteNews(string id);
 
         Task<IEnumerable<NewsArticleDto>> GetNewsByStaffEmail(string staffEmail);
+        
+        Task<IList<TagDto>> GetTags();
+
+        Task<IList<int>> GetTagOfANewsArticle(string newsId);
+
+        Task<NewsOperationResult> UpdateTags(string newsId, IList<int> selectedValues);
+
+        Task<IList<NewsArticleDto>> MakeNewsReport(short accountId, DateTime fromDate, DateTime toDate);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Repositories.Contracts;
 using Repositories.Databases;
+using System.ComponentModel.DataAnnotations;
 
 namespace Repositories
 {
@@ -123,6 +124,19 @@ namespace Repositories
             }
         }
 
+        public async Task<IList<Tag>> GetTags()
+        {
+            try
+            {
+                var tags = await _dbContext.Tags.ToListAsync();
+                return tags;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public async Task<NewsOperationResult> UpdateNews(NewsArticle newsArticle)
         {
             try
@@ -133,6 +147,71 @@ namespace Repositories
                 _dbContext.NewsArticles.Update(newsArticle);
                 await _dbContext.SaveChangesAsync();
                 return NewsOperationResult.Success;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<IList<int>> GetTagOfANews(string newsArticleId)
+        {
+            try
+            {
+                var tagValues = await _dbContext.NewsArticles
+                    .Where(n => n.NewsArticleId == newsArticleId)
+                    .SelectMany(n => n.Tags.Select(t => t.TagId))
+                    .ToListAsync();
+                return tagValues;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<NewsOperationResult> UpdateTagsForNews(string newsArticleId, IList<int> seletedTagIds)
+        {
+            try
+            {
+                var news = await _dbContext.NewsArticles
+                    .Include(x => x.Tags)
+                    .FirstOrDefaultAsync(x => x.NewsArticleId == newsArticleId);
+
+                if (news is null)
+                    return NewsOperationResult.Empty;
+
+                // Retrieve the selected tags from the database
+                var selectedTags = await _dbContext.Tags
+                    .Where(t => seletedTagIds.Contains(t.TagId))
+                    .ToListAsync();
+
+                // Clear existing tags
+                news.Tags.Clear();
+                foreach (var tag in selectedTags)
+                {
+                    news.Tags.Add(tag);
+                }
+
+                await _dbContext.SaveChangesAsync();
+                return NewsOperationResult.Success;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<IList<NewsArticle>> GetNewsOfAStaffWithDate(short accountId, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var news = await _dbContext.NewsArticles
+                    .Include(x => x.Tags)
+                    .Include(x => x.CreatedBy)
+                    .Where(x => x.CreatedById == accountId && x.CreatedDate >= fromDate && x.CreatedDate <= toDate)
+                    .ToListAsync();
+                return news;
             }
             catch
             {

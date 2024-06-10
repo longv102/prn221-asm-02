@@ -17,5 +17,13 @@ namespace Repositories.Contracts
         Task<NewsOperationResult> DeleteNews(string newsId);
 
         Task<IEnumerable<NewsArticle>> GetNewsByStaffEmail(string email);
+
+        Task<IList<Tag>> GetTags();
+
+        Task<IList<int>> GetTagOfANews(string newsArticleId);
+
+        Task<NewsOperationResult> UpdateTagsForNews(string newsArticleId, IList<int> seletedTagIds);
+
+        Task<IList<NewsArticle>> GetNewsOfAStaffWithDate(short accountId, DateTime fromDate, DateTime toDate);
     }
 }

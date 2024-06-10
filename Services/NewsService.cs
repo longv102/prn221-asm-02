@@ -72,6 +72,26 @@ namespace Services
             return response;
         }
 
+        public async Task<IList<int>> GetTagOfANewsArticle(string newsId)
+        {
+            var tagValues = await _newsArticleRepository.GetTagOfANews(newsId);
+            return tagValues;
+        }
+
+        public async Task<IList<TagDto>> GetTags()
+        {
+            var tags = await _newsArticleRepository.GetTags();
+            var response = _mapper.Map<IList<TagDto>>(tags);
+            return response;
+        }
+
+        public async Task<IList<NewsArticleDto>> MakeNewsReport(short accountId, DateTime fromDate, DateTime toDate)
+        {
+            var news = await _newsArticleRepository.GetNewsOfAStaffWithDate(accountId, fromDate, toDate);
+            var response = _mapper.Map<IList<NewsArticleDto>>(news);
+            return response;
+        }
+
         public async Task<NewsOperationResult> UpdateNews(NewsArticleDto request)
         {
             var news = new NewsArticle
@@ -86,6 +106,12 @@ namespace Services
                 NewsStatus = request.NewsStatus,
             };
             var result = await _newsArticleRepository.UpdateNews(news);
+            return result;
+        }
+
+        public async Task<NewsOperationResult> UpdateTags(string newsId, IList<int> selectedValues)
+        {
+            var result = await _newsArticleRepository.UpdateTagsForNews(newsId, selectedValues);
             return result;
         }
     }

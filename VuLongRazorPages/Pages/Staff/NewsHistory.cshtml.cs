@@ -22,7 +22,7 @@ namespace VuLongRazorPages.Pages.Staff
         {
             var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
             if (string.IsNullOrEmpty(role) || "Staff" != role)
-                return RedirectToPage("../StaffRedirect");
+                return RedirectToPage("./StaffRedirect");
             
             // Retrieve email from session 
             var staffEmail = _httpContextAccessor.HttpContext?.Session?.GetString("StaffEmail") ?? string.Empty;

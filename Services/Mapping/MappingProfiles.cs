@@ -20,6 +20,8 @@ namespace Services.Mapping
                 .ReverseMap();
 
             CreateMap<Category, CategoryDto>().ReverseMap();
+
+            CreateMap<Tag, TagDto>().ReverseMap();
         }
     }
 }

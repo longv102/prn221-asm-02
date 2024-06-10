@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Contracts;
 using Repositories.Databases;
@@ -26,11 +25,8 @@ namespace VuLongRazorPages.Extensions
             // Register AutoMapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            // Register database context
-            services.AddDbContext<FunewsManagementDbContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Invalid connection string!"));
-            });
+            // Register DbContext
+            services.AddDatabaseContext(configuration);
 
             // Register services
             services.AddScoped<IAccountService, AccountService>();
