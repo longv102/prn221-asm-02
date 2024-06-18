@@ -19,6 +19,7 @@ namespace VuLongRazorPages.Pages.Admin
 
         public IActionResult OnGet()
         {
+            // Authorize
             var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
             if (string.IsNullOrEmpty(role) || "Admin" != role)
             {

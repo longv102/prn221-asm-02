@@ -10,10 +10,12 @@ namespace VuLongRazorPages.Pages.Staff.News
     public class DeleteModel : PageModel
     {
         private readonly INewsService _newsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DeleteModel(INewsService newsService)
+        public DeleteModel(INewsService newsService, IHttpContextAccessor httpContextAccessor)
         {
             _newsService = newsService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -21,6 +23,13 @@ namespace VuLongRazorPages.Pages.Staff.News
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
+            #region
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+            #endregion
             if (id == null)
             {
                 return NotFound();

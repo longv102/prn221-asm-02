@@ -8,10 +8,12 @@ namespace VuLongRazorPages.Pages.Staff.News
     public class ManageTagsModel : PageModel
     {
         private readonly INewsService _newsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ManageTagsModel(INewsService newsService)
+        public ManageTagsModel(INewsService newsService, IHttpContextAccessor httpContextAccessor)
         {
             _newsService = newsService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IList<TagDto>? Tags { get; set; }
@@ -23,6 +25,14 @@ namespace VuLongRazorPages.Pages.Staff.News
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
+
+            #region
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+            #endregion
             if (string.IsNullOrEmpty(id))
                 return NotFound();
 

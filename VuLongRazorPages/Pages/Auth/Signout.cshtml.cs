@@ -17,7 +17,7 @@ namespace VuLongRazorPages.Pages.Auth
             // sign out the user
             await HttpContext.SignOutAsync();
 
-            return RedirectToPage("../Index");
+            return RedirectToPage("./Signin");
         }
     }
 }

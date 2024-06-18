@@ -38,7 +38,9 @@ namespace Services
                 throw new NullReferenceException("Request is nullable!");
 
             var account = _mapper.Map<SystemAccount>(request);
-            
+            // Hard-code for password validation
+            account.AccountPassword = "1234";
+
             var result = await _systemAccountRepository.AddAccount(account);
             return result;
         }
@@ -75,9 +77,10 @@ namespace Services
             if (request is null)
                 throw new NullReferenceException("Request is nullable!");
 
-            var account = _mapper.Map<SystemAccount>(request);
-            var result = await _systemAccountRepository.UpdateAccount(account);
-
+            var existedAccount = await _systemAccountRepository.GetAccount(request.AccountId);
+            // Update account
+            var updatedAccount = _mapper.Map<SystemAccountDto, SystemAccount>(request, existedAccount);
+            var result = await _systemAccountRepository.UpdateAccount(updatedAccount);
             return result;
         }
     }

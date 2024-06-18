@@ -8,10 +8,12 @@ namespace VuLongRazorPages.Pages.Admin
     public class DetailsModel : PageModel
     {
         private readonly IAccountService _accountService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DetailsModel(IAccountService accountService)
+        public DetailsModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public SystemAccountDto SystemAccount { get; set; } = default!;
@@ -28,6 +30,13 @@ namespace VuLongRazorPages.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
+            // Authorize
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Admin" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+
             if (id == null)
             {
                 return NotFound();

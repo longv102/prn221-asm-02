@@ -23,6 +23,14 @@ namespace VuLongRazorPages.Pages.Staff
 
         public async Task<IActionResult> OnGetAsync(string email)
         {
+            #region Authorize
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+            #endregion
+
             var account = await _accountService.GetAccount(email);
             if (account is null)
             {
@@ -44,10 +52,6 @@ namespace VuLongRazorPages.Pages.Staff
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // mapping role
-            //var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role") ?? string.Empty;
-            //Role = role;
-
             if (!ModelState.IsValid)
             {
                 return Page();

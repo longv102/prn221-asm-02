@@ -8,10 +8,12 @@ namespace VuLongRazorPages.Pages.Admin
     public class DeleteModel : PageModel
     {
         private readonly IAccountService _accountService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DeleteModel(IAccountService accountService)
+        public DeleteModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -19,6 +21,13 @@ namespace VuLongRazorPages.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
+            // Authorize
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Admin" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+
             if (id == null)
             {
                 return NotFound();

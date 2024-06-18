@@ -29,8 +29,7 @@ namespace VuLongRazorPages.Pages.Staff
             var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
             if (string.IsNullOrEmpty(role) || "Staff" != role)
             {
-                // TODO: Fix
-                return RedirectToPage("/Index");
+                return RedirectToPage("../Index");
             }
             return Page();
         }

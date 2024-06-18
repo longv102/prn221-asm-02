@@ -16,7 +16,8 @@ namespace BO.Dtos
         public string? AccountEmail { get; set; }
 
         public int AccountRole { get; set; }
-        
-        public string? AccountPassword { get; set; } = "1234";
+
+        [Required(ErrorMessage = "Password is required!")]
+        public string? AccountPassword { get; set; }
     }
 }

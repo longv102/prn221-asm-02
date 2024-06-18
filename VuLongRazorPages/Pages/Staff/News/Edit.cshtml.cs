@@ -13,12 +13,15 @@ namespace VuLongRazorPages.Pages.Staff.News
         private readonly INewsService _newsService;
         private readonly ICategoryService _categoryService;
         private readonly IAccountService _accountService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EditModel(INewsService newsService, ICategoryService categoryService, IAccountService accountService)
+        public EditModel(INewsService newsService, ICategoryService categoryService, IAccountService accountService, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _newsService = newsService;
             _categoryService = categoryService;
             _accountService = accountService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -26,6 +29,13 @@ namespace VuLongRazorPages.Pages.Staff.News
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
+            #region
+            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || "Staff" != role)
+            {
+                return RedirectToPage("../Index");
+            }
+            #endregion
             if (id == null)
             {
                 return NotFound();

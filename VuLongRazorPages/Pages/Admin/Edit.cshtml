@@ -13,7 +13,7 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="SystemAccount.AccountId" readonly/>
+            <input type="hidden" asp-for="SystemAccount.AccountId" readonly />
             <div class="form-group mb-3">
                 <label asp-for="SystemAccount.AccountName" class="control-label">Account Name</label>
                 <input asp-for="SystemAccount.AccountName" class="form-control" />
@@ -23,6 +23,11 @@
                 <label asp-for="SystemAccount.AccountEmail" class="control-label">Account Email</label>
                 <input asp-for="SystemAccount.AccountEmail" class="form-control" />
                 <span asp-validation-for="SystemAccount.AccountEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SystemAccount.AccountPassword" class="control-label">Password</label>
+                <input asp-for="SystemAccount.AccountPassword" class="form-control" />
+                <span asp-validation-for="SystemAccount.AccountPassword" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="SystemAccount.AccountRole" class="control-label">Account Role</label>
@@ -44,5 +49,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

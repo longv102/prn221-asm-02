@@ -49,8 +49,9 @@ namespace VuLongRazorPages.Pages.Admin
             TotalPages = (int)Math.Ceiling(Accounts.Count() / (double)_pageSize);
             if (!string.IsNullOrEmpty(SearchQuery))
             {
-                Accounts = (IList<SystemAccountDto>)Accounts
-                    .Where(x => x.AccountName.Contains(SearchQuery.Trim(), StringComparison.OrdinalIgnoreCase));
+                Accounts = Accounts
+                    .Where(x => x.AccountName.Contains(SearchQuery.Trim(), StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
             CurrentPage = currentPage;
             Accounts = Accounts.Skip((CurrentPage - 1) * _pageSize).Take(_pageSize).ToList();
