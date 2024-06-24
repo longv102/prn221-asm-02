@@ -1,19 +1,16 @@
 ﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly ICategoryService _categoryService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public IndexModel(ICategoryService categoryService, IHttpContextAccessor httpContextAccessor)
+        
+        public IndexModel(ICategoryService categoryService)
         {
             _categoryService = categoryService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -24,13 +21,10 @@ namespace VuLongRazorPages.Pages.Staff.Categories
 
         public IList<CategoryDto> Category { get;set; } = default!;
 
+        protected override string RequiredRole => "Staff";
+
         public async Task<IActionResult> OnGetAsync()
-        {
-            // Authorization for staff role
-            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-                return RedirectToPage("../StaffRedirect");
-            
+        {    
             Category = (IList<CategoryDto>)await _categoryService.GetCategories();
             if (!string.IsNullOrEmpty(SearchQuery))
             {

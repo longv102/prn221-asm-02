@@ -1,12 +1,11 @@
 ﻿using BO.Dtos;
 using BO.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly ICategoryService _categoryService;
 
@@ -17,6 +16,8 @@ namespace VuLongRazorPages.Pages.Staff.Categories
 
         [BindProperty]
         public CategoryDto Category { get; set; } = default!;
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {

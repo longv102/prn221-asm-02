@@ -5,7 +5,7 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : BasePageModel
     {
         private readonly ICategoryService _categoryService;
 
@@ -16,6 +16,8 @@ namespace VuLongRazorPages.Pages.Staff.Categories
 
         [BindProperty]
         public CategoryDto Category { get; set; } = default!;
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {

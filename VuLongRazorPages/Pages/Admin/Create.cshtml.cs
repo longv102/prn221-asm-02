@@ -1,35 +1,27 @@
 ﻿using BO.Dtos;
 using BO.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public CreateModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            // Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            return Page();
         }
 
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
+
+        protected override string RequiredRole => "Admin";
 
         public async Task<IActionResult> OnPostAsync()
         {

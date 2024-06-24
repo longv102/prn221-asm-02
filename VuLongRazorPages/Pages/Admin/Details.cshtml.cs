@@ -1,22 +1,21 @@
 ﻿using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DetailsModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public DetailsModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public SystemAccountDto SystemAccount { get; set; } = default!;
+
+        protected override string RequiredRole => "Admin";
 
         public string GetRoleName(int accountRole)
         {
@@ -30,18 +29,6 @@ namespace VuLongRazorPages.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {
-            // Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var systemAccount = await _accountService.GetAccount((short)id);
             if (systemAccount == null)
             {

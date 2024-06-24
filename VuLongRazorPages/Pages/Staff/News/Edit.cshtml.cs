@@ -8,34 +8,26 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly INewsService _newsService;
         private readonly ICategoryService _categoryService;
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public EditModel(INewsService newsService, ICategoryService categoryService, IAccountService accountService, 
-            IHttpContextAccessor httpContextAccessor)
+        
+        public EditModel(INewsService newsService, ICategoryService categoryService, IAccountService accountService)
         {
             _newsService = newsService;
             _categoryService = categoryService;
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
         public NewsArticleDto NewsArticle { get; set; } = default!;
 
+        protected override string RequiredRole => "Staff";
+
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            #region
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            #endregion
             if (id == null)
             {
                 return NotFound();

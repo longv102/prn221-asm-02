@@ -5,29 +5,22 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DeleteModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public DeleteModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
 
+        protected override string RequiredRole => "Admin";
+
         public async Task<IActionResult> OnGetAsync(short? id)
         {
-            // Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-
             if (id == null)
             {
                 return NotFound();

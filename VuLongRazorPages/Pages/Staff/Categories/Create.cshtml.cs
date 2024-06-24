@@ -6,28 +6,23 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BasePageModel
     {
         private readonly ICategoryService _categoryService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public CreateModel(ICategoryService categoryService , IHttpContextAccessor httpContextAccessor)
+        
+        public CreateModel(ICategoryService categoryService)
         {
             _categoryService = categoryService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-                return RedirectToPage("../StaffRedirect");
-
-            return Page();
         }
 
         [BindProperty]
         public CategoryDto Category { get; set; } = default!;
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnPostAsync()
         {

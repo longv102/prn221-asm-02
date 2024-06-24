@@ -6,32 +6,21 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BasePageModel
     {
         private readonly INewsService _newsService;
         private readonly IAccountService _accountService;
         private readonly ICategoryService _categoryService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(INewsService newsService, IAccountService accountService, ICategoryService categoryService, 
-            IHttpContextAccessor httpContextAccessor)
+        public CreateModel(INewsService newsService, IAccountService accountService, ICategoryService categoryService)
         {
             _newsService = newsService;
             _accountService = accountService;
             _categoryService = categoryService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IActionResult> OnGetAsync()
-        {
-            #region Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            #endregion
-
+        {   
             ViewData["CategoryId"] = new SelectList(await _categoryService.GetCategories(), "CategoryId", "CategoryName");
             ViewData["CreatedById"] = new SelectList(await _accountService.GetAccounts(), "AccountId", "AccountName");
             return Page();
@@ -39,6 +28,8 @@ namespace VuLongRazorPages.Pages.Staff.News
 
         [BindProperty]
         public NewsArticleDto NewsArticle { get; set; } = default!;
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnPostAsync()
         {

@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace VuLongRazorPages.Pages.Staff
 {
-    public class StaffRedirectModel : PageModel
+    public class StaffRedirectModel : BasePageModel
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -16,6 +15,8 @@ namespace VuLongRazorPages.Pages.Staff
 
         public string? StaffEmail { get; set; }
 
+        protected override string RequiredRole => "Staff";
+
         public ActionResult OnGet()
         {
             // Retrieve the name of current logged in staff
@@ -25,12 +26,6 @@ namespace VuLongRazorPages.Pages.Staff
             // Retrieve the email of current logged in staff
             var staffEmail = _httpContextAccessor.HttpContext?.Session?.GetString("StaffName") ?? string.Empty;
             StaffEmail = staffEmail;
-
-            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-            {
-                return RedirectToPage("../Index");
-            }
             return Page();
         }
     }

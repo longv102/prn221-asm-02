@@ -5,29 +5,22 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel : BasePageModel
     {
         private readonly INewsService _newsService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public DetailsModel(INewsService newsService, IHttpContextAccessor httpContextAccessor)
+        
+        public DetailsModel(INewsService newsService)
         {
             _newsService = newsService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public NewsArticleDto NewsArticle { get; set; } = default!;
 
+        protected override string RequiredRole => "Staff";
+
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            #region
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            #endregion
-
+            
             if (id == null)
             {
                 return NotFound();

@@ -5,32 +5,24 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff
 {
-    public class StaffProfileModel : PageModel
+    public class StaffProfileModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public StaffProfileModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public StaffProfileModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
 
-        public string? Role { get; set; }
+        //public string? Role { get; set; }
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnGetAsync(string email)
-        {
-            #region Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            #endregion
-
+        {   
             var account = await _accountService.GetAccount(email);
             if (account is null)
             {

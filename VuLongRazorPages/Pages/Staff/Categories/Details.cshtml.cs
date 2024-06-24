@@ -5,7 +5,7 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.Categories
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel : BasePageModel
     {
         private readonly ICategoryService _categoryService;
 
@@ -15,6 +15,8 @@ namespace VuLongRazorPages.Pages.Staff.Categories
         }
 
         public CategoryDto Category { get; set; } = default!;
+
+        protected override string RequiredRole => "Staff";
 
         public async Task<IActionResult> OnGetAsync(short? id)
         {

@@ -6,30 +6,22 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EditModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public EditModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
         public SystemAccountDto SystemAccount { get; set; } = default!;
 
+        protected override string RequiredRole => "Admin";
+
         public async Task<IActionResult> OnGetAsync(short? id)
         {
-            #region Authorize
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-            #endregion
-
             if (id == null)
             {
                 return NotFound();

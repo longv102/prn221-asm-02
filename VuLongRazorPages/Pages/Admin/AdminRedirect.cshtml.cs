@@ -1,20 +1,17 @@
 using BO.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Admin
 {
-    public class AdminRedirectModel : PageModel
+    public class AdminRedirectModel : BasePageModel
     {
         private readonly IAccountService _accountService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly int _pageSize = 5;
 
-        public AdminRedirectModel(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public AdminRedirectModel(IAccountService accountService)
         {
             _accountService = accountService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public IList<SystemAccountDto> Accounts { get; private set; } = null!;
@@ -25,6 +22,8 @@ namespace VuLongRazorPages.Pages.Admin
         public int CurrentPage { get; set; }
 
         public int TotalPages { get; set; }
+
+        protected override string RequiredRole => "Admin";
 
         public string GetRoleName(int accountRole)
         {
@@ -38,13 +37,6 @@ namespace VuLongRazorPages.Pages.Admin
 
         public async Task<ActionResult> OnGetAsync(int currentPage = 1)
         {
-            // Authorize for admin
-            var role = _httpContextAccessor.HttpContext?.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Admin" != role)
-            {
-                return RedirectToPage("../Index");
-            }
-
             Accounts = (IList<SystemAccountDto>) await _accountService.GetAccounts();
             TotalPages = (int)Math.Ceiling(Accounts.Count() / (double)_pageSize);
             if (!string.IsNullOrEmpty(SearchQuery))

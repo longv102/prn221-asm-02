@@ -5,16 +5,14 @@ using Services.Interfaces;
 
 namespace VuLongRazorPages.Pages.Staff.News
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly INewsService _newsService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly int _pageSize = 5;
 
-        public IndexModel(INewsService newsService, IHttpContextAccessor httpContextAccessor)
+        public IndexModel(INewsService newsService)
         {
             _newsService = newsService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public int CurrentPage { get; set; }
@@ -23,12 +21,10 @@ namespace VuLongRazorPages.Pages.Staff.News
 
         public IList<NewsArticleDto> NewsArticle { get;set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int currentPage = 1)
-        {
-            var role = _httpContextAccessor.HttpContext?.Session?.GetString("Role");
-            if (string.IsNullOrEmpty(role) || "Staff" != role)
-                return RedirectToPage("../StaffRedirect");
+        protected override string RequiredRole => "Staff";
 
+        public async Task<IActionResult> OnGetAsync(int currentPage = 1)
+        {   
             NewsArticle = (IList<NewsArticleDto>)await _newsService.GetNewsV2();
             TotalPages = (int)Math.Ceiling(NewsArticle.Count() / (double)_pageSize);
 
